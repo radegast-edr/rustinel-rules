@@ -1,0 +1,48 @@
+title: Shell Download-and-Execute Pipe Cradle
+id: 3e506273-8f91-42a4-8eb4-5f6071823405
+status: experimental
+description: >
+  Detects a shell invoked with an inline command that downloads remote content
+  with curl or wget and pipes it directly into an interpreter for execution — a
+  common macOS payload-staging and fake-installer technique. Noisier where
+  developer install one-liners are common, so placed in the Advanced tier.
+references:
+  - https://attack.mitre.org/techniques/T1105/
+  - https://attack.mitre.org/techniques/T1059/004/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.command-and-control
+  - attack.t1105
+  - attack.execution
+  - attack.t1059.004
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_shell:
+    Image|endswith:
+      - '/bash'
+      - '/zsh'
+      - '/sh'
+  selection_download:
+    CommandLine|contains:
+      - 'curl '
+      - 'wget '
+  selection_pipe:
+    CommandLine|contains:
+      - '| bash'
+      - '| sh'
+      - '| zsh'
+      - '|bash'
+      - '|sh'
+      - '|zsh'
+  condition: selection_shell and selection_download and selection_pipe
+falsepositives:
+  - Developer install one-liners (e.g. Homebrew-style bootstraps) that fetch and run scripts.
+level: high
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: medium
+  test_status: none

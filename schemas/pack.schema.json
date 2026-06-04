@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/rustinel-rules/schemas/pack.schema.json",
+  "title": "Rustinel pack.yml (v1)",
+  "description": "Schema for a rustinel-rules pack manifest. Packs reference canonical rules by id and may extend lower-level packs cumulatively (Essential ⊂ Advanced ⊂ Hunting).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "id",
+    "description",
+    "os",
+    "level",
+    "pack_schema_version",
+    "requires_rustinel",
+    "default",
+    "status",
+    "extends",
+    "rules"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Human-readable pack name.",
+      "minLength": 1
+    },
+    "id": {
+      "type": "string",
+      "description": "Stable, unique pack identifier.",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "os": {
+      "type": "string",
+      "enum": ["windows", "linux", "macos"]
+    },
+    "level": {
+      "type": "string",
+      "enum": ["essential", "advanced", "hunting"]
+    },
+    "pack_schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "requires_rustinel": {
+      "type": "string",
+      "description": "Version constraint against the Rustinel engine, e.g. \">=1.0.2\".",
+      "minLength": 1
+    },
+    "default": {
+      "type": "boolean",
+      "description": "Whether this pack is enabled by default."
+    },
+    "expected_false_positive_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["experimental", "test", "stable", "deprecated"]
+    },
+    "extends": {
+      "type": "array",
+      "description": "Pack ids this pack cumulatively includes (rules are merged, never duplicated).",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "rules": {
+      "type": "array",
+      "description": "Rule ids (Sigma UUIDs or YARA rule names) added by THIS pack on top of any it extends.",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "sources": {
+      "type": "array",
+      "description": "Upstream / CTI references that informed this pack.",
+      "items": { "type": "string" }
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX-like identifier or license name for the pack content."
+    },
+    "attack_coverage": {
+      "type": "array",
+      "description": "ATT&CK technique ids covered, e.g. [\"T1059.001\", \"T1547.001\"].",
+      "items": {
+        "type": "string",
+        "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$"
+      },
+      "uniqueItems": true
+    },
+    "telemetry_requirements": {
+      "type": "array",
+      "description": "Rustinel telemetry channels required for this pack to function.",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "test_status": {
+      "type": "string",
+      "enum": ["none", "atomic", "manual", "dynamic", "mixed"]
+    }
+  }
+}

@@ -1,0 +1,58 @@
+title: osascript Credential Prompt or Suspicious Admin Shell
+id: 6b2d3f40-5c6e-4f71-9b81-2c3d4e5f6012
+status: experimental
+description: >
+  Detects AppleScript executed via osascript that either presents a hidden-answer
+  dialog prompting for a password or runs a suspicious administrator shell
+  command. Both are hallmark macOS infostealer behaviours used to phish the
+  user's login password and stage payloads through native-looking prompts.
+references:
+  - https://attack.mitre.org/techniques/T1059/002/
+  - https://attack.mitre.org/techniques/T1056/002/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.execution
+  - attack.t1059.002
+  - attack.credential-access
+  - attack.t1056.002
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_img:
+    Image|endswith: '/osascript'
+  selection_admin:
+    CommandLine|contains|all:
+      - 'do shell script'
+      - 'with administrator privileges'
+  selection_admin_suspicious:
+    CommandLine|contains:
+      - 'curl '
+      - 'wget '
+      - 'chmod '
+      - 'xattr '
+      - 'base64'
+      - '/tmp/'
+      - '/private/tmp/'
+      - '/Users/Shared/'
+      - '/var/folders/'
+      - 'security '
+      - 'sqlite3'
+      - 'osascript '
+      - 'python'
+      - 'bash'
+      - 'zsh'
+  selection_phish:
+    CommandLine|contains|all:
+      - 'display dialog'
+      - 'hidden answer'
+  condition: selection_img and (selection_phish or (selection_admin and selection_admin_suspicious))
+falsepositives:
+  - Legitimate helper apps and installers that request elevation via AppleScript and run shell-based setup commands.
+level: high
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: low
+  test_status: none

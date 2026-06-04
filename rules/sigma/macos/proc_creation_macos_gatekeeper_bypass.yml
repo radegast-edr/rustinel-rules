@@ -1,0 +1,44 @@
+title: Gatekeeper or Quarantine Protection Disabled
+id: 5c3e4051-6d7f-4082-8c92-3d4e5f601203
+status: experimental
+description: >
+  Detects disabling of macOS Gatekeeper (spctl --master-disable /
+  --global-disable) or explicit deletion of the com.apple.quarantine attribute
+  via xattr. Both let unsigned or freshly downloaded payloads run without the
+  usual Gatekeeper / quarantine prompts, a common step in fake-installer and
+  infostealer chains.
+references:
+  - https://attack.mitre.org/techniques/T1553/001/
+  - https://attack.mitre.org/techniques/T1562/001/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.defense-evasion
+  - attack.t1553.001
+  - attack.t1562.001
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_spctl:
+    Image|endswith: '/spctl'
+    CommandLine|contains:
+      - 'master-disable'
+      - 'global-disable'
+  selection_xattr:
+    Image|endswith: '/xattr'
+  selection_xattr_delete:
+    CommandLine|contains:
+      - '-d com.apple.quarantine'
+      - '-rd com.apple.quarantine'
+      - '-dr com.apple.quarantine'
+      - '--delete com.apple.quarantine'
+  condition: selection_spctl or (selection_xattr and selection_xattr_delete)
+falsepositives:
+  - Developers stripping quarantine from their own builds; rare administrative Gatekeeper changes.
+level: high
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: low
+  test_status: none

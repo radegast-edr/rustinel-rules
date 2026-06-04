@@ -1,0 +1,36 @@
+title: Registry Run Key Persistence
+id: a1b2c3d4-7e8f-4012-9a3b-4c5d6e7f0a10
+status: experimental
+description: >
+  Detects creation or modification of autorun Run / RunOnce keys, a widely used
+  persistence mechanism that survives reboot. Expected to fire on legitimate
+  installers, so intended for the Advanced tier with tuning.
+  Note: Rustinel's registry telemetry sets TargetObject to the key path (without
+  the trailing value name), so the Run key paths are matched without a trailing
+  separator.
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  category: registry_event
+  product: windows
+detection:
+  selection:
+    TargetObject|contains:
+      - '\CurrentVersion\Run'
+      - '\CurrentVersion\RunOnce'
+      - '\CurrentVersion\RunServices'
+      - '\CurrentVersion\Policies\Explorer\Run'
+  condition: selection
+falsepositives:
+  - Software installers and legitimate startup applications.
+level: medium
+rustinel:
+  telemetry:
+    - registry_event
+  expected_false_positive_level: medium
+  test_status: none

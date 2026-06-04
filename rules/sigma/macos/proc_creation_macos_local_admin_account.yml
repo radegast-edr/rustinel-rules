@@ -1,0 +1,42 @@
+title: Local Admin Account Created via Directory Services
+id: 2f617384-9012-43b5-9fc5-60718293a416
+status: experimental
+description: >
+  Detects creation of a local account or its addition to the admin group via
+  dscl, sysadminctl or dseditgroup. Adversaries use this to establish a
+  persistent privileged account, sometimes hidden from the login window.
+references:
+  - https://attack.mitre.org/techniques/T1136/001/
+  - https://attack.mitre.org/techniques/T1098/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.persistence
+  - attack.t1136.001
+  - attack.t1098
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_dscl:
+    Image|endswith: '/dscl'
+    CommandLine|contains|all:
+      - 'create'
+      - '/Users/'
+  selection_sysadminctl:
+    Image|endswith: '/sysadminctl'
+    CommandLine|contains: '-addUser'
+  selection_dseditgroup:
+    Image|endswith: '/dseditgroup'
+    CommandLine|contains|all:
+      - 'admin'
+      - '-a '
+  condition: selection_dscl or selection_sysadminctl or selection_dseditgroup
+falsepositives:
+  - Legitimate provisioning, MDM enrollment and IT administration workflows.
+level: medium
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: medium
+  test_status: none

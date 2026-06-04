@@ -1,0 +1,35 @@
+title: SSH authorized_keys Created or Replaced
+id: 1b2c3d4e-5f60-4172-9b83-0c1d2e3f4a51
+status: experimental
+description: >
+  Detects creation or replacement of an SSH authorized_keys file, a common
+  persistence and remote-access technique that lets an attacker log in with their
+  own key.
+  Note: Rustinel's Linux file telemetry hooks file creation and rename, so this
+  catches newly created or editor-rewritten authorized_keys files; in-place
+  appends to an existing file are not observed.
+references:
+  - https://attack.mitre.org/techniques/T1098/004/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.persistence
+  - attack.lateral-movement
+  - attack.t1098.004
+logsource:
+  category: file_event
+  product: linux
+detection:
+  selection:
+    TargetFilename|endswith:
+      - '/authorized_keys'
+      - '/authorized_keys2'
+  condition: selection
+falsepositives:
+  - Legitimate key provisioning via ssh-copy-id or configuration management.
+level: high
+rustinel:
+  telemetry:
+    - file_event
+  expected_false_positive_level: low
+  test_status: none

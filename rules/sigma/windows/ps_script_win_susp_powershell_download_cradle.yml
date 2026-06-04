@@ -1,0 +1,45 @@
+title: PowerShell Download-and-Execute Cradle
+id: c3d4e5f6-9012-4234-9c5d-6e7f8a901a12
+status: experimental
+description: >
+  Detects in-memory PowerShell download-and-execute cradles in script block
+  logging, where remote content is fetched (Net.WebClient / Invoke-WebRequest /
+  BITS) and immediately executed via Invoke-Expression. A core staging technique
+  for fileless payload delivery. Noisier in dev/admin environments where install
+  one-liners (e.g. "iwr ... | iex") are common, so placed in the Advanced tier.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+  - https://attack.mitre.org/techniques/T1105/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.execution
+  - attack.t1059.001
+  - attack.command-and-control
+  - attack.t1105
+logsource:
+  category: ps_script
+  product: windows
+detection:
+  selection_download:
+    ScriptBlockText|contains:
+      - 'Net.WebClient'
+      - 'DownloadString'
+      - 'DownloadFile'
+      - 'DownloadData'
+      - 'Invoke-WebRequest'
+      - 'Start-BitsTransfer'
+  selection_exec:
+    ScriptBlockText|contains:
+      - 'IEX'
+      - 'Invoke-Expression'
+      - '| iex'
+  condition: selection_download and selection_exec
+falsepositives:
+  - Legitimate package/install one-liners and automation that fetch and run scripts.
+level: high
+rustinel:
+  telemetry:
+    - ps_script
+  expected_false_positive_level: medium
+  test_status: none

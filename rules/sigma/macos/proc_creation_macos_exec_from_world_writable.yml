@@ -1,0 +1,39 @@
+title: Execution from World-Writable or Temporary Directory
+id: 1a728495-a123-44c6-8ad6-718293a4b527
+status: experimental
+description: >
+  Detects a process executing from a world-writable or temporary location
+  (/tmp, /var/tmp, /Users/Shared). Common for dropped payloads and fake
+  installers staged from disk images, though build tooling also runs helpers
+  from these paths, so intended for the Advanced tier.
+  Note: macOS resolves /tmp and /var/tmp to /private/..., so both forms are matched.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+  - https://attack.mitre.org/techniques/T1036/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.execution
+  - attack.t1059.004
+  - attack.defense-evasion
+  - attack.t1036
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection:
+    Image|startswith:
+      - '/tmp/'
+      - '/private/tmp/'
+      - '/var/tmp/'
+      - '/private/var/tmp/'
+      - '/Users/Shared/'
+  condition: selection
+falsepositives:
+  - Build systems, package managers and installers that execute helper binaries from temp paths.
+level: medium
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: medium
+  test_status: none

@@ -1,0 +1,33 @@
+title: LSASS Memory Dump via comsvcs.dll MiniDump
+id: 7d2a8f31-4b6c-49e0-a1f8-3c5d9e0b2a05
+status: experimental
+description: >
+  Detects use of rundll32 with comsvcs.dll's MiniDump export to dump the memory
+  of a process (typically LSASS) for offline credential extraction. This is a
+  high-confidence, low-noise credential-access technique with virtually no
+  legitimate use.
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+  - https://lolbas-project.github.io/lolbas/Libraries/Comsvcs/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.credential-access
+  - attack.t1003.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains|all:
+      - 'comsvcs'
+      - 'MiniDump'
+  condition: selection
+falsepositives:
+  - None expected; legitimate use of comsvcs MiniDump is extremely rare.
+level: critical
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: low
+  test_status: none

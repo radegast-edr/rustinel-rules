@@ -1,0 +1,37 @@
+title: Launch Agent or Daemon Persistence Plist Created
+id: 4d4f5162-7e80-4193-9da3-4e5f60712304
+status: experimental
+description: >
+  Detects creation of a property-list file in a LaunchAgents or LaunchDaemons
+  directory, the primary macOS persistence mechanism. Legitimate application
+  installers also drop launch items here, so this is intended for the Advanced
+  tier with tuning. System-shipped items under /System are excluded.
+references:
+  - https://attack.mitre.org/techniques/T1543/001/
+  - https://attack.mitre.org/techniques/T1543/004/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.persistence
+  - attack.t1543.001
+  - attack.t1543.004
+logsource:
+  category: file_event
+  product: macos
+detection:
+  selection:
+    TargetFilename|contains:
+      - '/Library/LaunchAgents/'
+      - '/Library/LaunchDaemons/'
+    TargetFilename|endswith: '.plist'
+  filter_system:
+    TargetFilename|startswith: '/System/'
+  condition: selection and not filter_system
+falsepositives:
+  - Application installers and management tooling that register launch items.
+level: medium
+rustinel:
+  telemetry:
+    - file_event
+  expected_false_positive_level: medium
+  test_status: none

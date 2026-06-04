@@ -1,0 +1,44 @@
+title: Suspicious Service Binary Path
+id: d4e5f6a7-0123-4345-9d6e-7f8a9b012a13
+status: experimental
+description: >
+  Detects creation of a Windows service whose binary is a command interpreter or
+  resides in a user-writable / temporary location. Associated with PsExec-style
+  lateral movement and service-based persistence. Some legitimate management
+  agents install services from ProgramData, so placed in the Advanced tier.
+references:
+  - https://attack.mitre.org/techniques/T1543/003/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1543.003
+logsource:
+  category: service_creation
+  product: windows
+detection:
+  selection_interpreter:
+    ServiceFileName|contains:
+      - 'cmd.exe'
+      - 'powershell.exe'
+      - 'pwsh.exe'
+      - 'rundll32.exe'
+      - 'mshta.exe'
+      - '%COMSPEC%'
+  selection_path:
+    ServiceFileName|contains:
+      - '\Users\'
+      - '\Temp\'
+      - '\ProgramData\'
+      - '\AppData\'
+      - '\PSEXESVC'
+  condition: selection_interpreter or selection_path
+falsepositives:
+  - Some legitimate management agents install services from ProgramData.
+level: high
+rustinel:
+  telemetry:
+    - service_creation
+  expected_false_positive_level: medium
+  test_status: none

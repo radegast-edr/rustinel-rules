@@ -1,0 +1,35 @@
+title: WMI Process Execution via WMIC
+id: 2a3c3182-80b8-42d4-bd39-83c55582ef70
+status: experimental
+description: >
+  Detects wmic.exe launching a process through the WMI process call create
+  method. This living-off-the-land technique is used for local execution,
+  lateral movement and post-exploitation automation.
+references:
+  - https://attack.mitre.org/techniques/T1047/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.execution
+  - attack.lateral-movement
+  - attack.t1047
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\wmic.exe'
+  selection_exec:
+    CommandLine|contains|all:
+      - 'process'
+      - 'call'
+      - 'create'
+  condition: selection_img and selection_exec
+falsepositives:
+  - Legacy systems-management scripts that still use WMIC for remote or local process launch.
+level: medium
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: medium
+  test_status: none

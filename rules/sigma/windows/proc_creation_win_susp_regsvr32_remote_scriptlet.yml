@@ -1,0 +1,36 @@
+title: Regsvr32 Remote Scriptlet Execution (Squiblydoo)
+id: 9a0c3e75-6d8b-4f12-bc34-1e7a5d9c0b06
+status: experimental
+description: >
+  Detects regsvr32.exe loading a remote or UNC-hosted scriptlet (scrobj) to
+  proxy code execution and bypass application control. Known as the Squiblydoo
+  technique; remote scriptlet registration has no common legitimate use.
+references:
+  - https://attack.mitre.org/techniques/T1218/010/
+  - https://lolbas-project.github.io/lolbas/Binaries/Regsvr32/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.defense-evasion
+  - attack.t1218.010
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\regsvr32.exe'
+  selection_remote:
+    CommandLine|contains:
+      - 'scrobj'
+      - '/i:http'
+      - '/i:ftp'
+      - '/i:\\\\'
+  condition: selection_img and selection_remote
+falsepositives:
+  - Rare legitimate COM registration that loads scriptlets from a network share.
+level: high
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: low
+  test_status: none

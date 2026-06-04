@@ -1,0 +1,53 @@
+title: Linux Web Server Spawning Interactive Shell
+id: 8fd4d1d9-38cf-4704-8009-00e41a009c98
+status: experimental
+description: >
+  Detects web server or application runtime processes spawning command shells.
+  This parent-child relationship is a strong signal of web shell execution,
+  exploitation of a web-facing service, or malicious post-exploitation.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+  - https://attack.mitre.org/techniques/T1505/003/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.execution
+  - attack.persistence
+  - attack.t1059.004
+  - attack.t1505.003
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_parent:
+    ParentImage|endswith:
+      - '/apache2'
+      - '/httpd'
+      - '/nginx'
+      - '/php-fpm'
+      - '/php'
+      - '/uwsgi'
+      - '/gunicorn'
+      - '/tomcat'
+      - '/java'
+  selection_shell:
+    Image|endswith:
+      - '/bash'
+      - '/sh'
+      - '/zsh'
+      - '/dash'
+      - '/python'
+      - '/python3'
+      - '/perl'
+      - '/nc'
+      - '/ncat'
+      - '/socat'
+  condition: selection_parent and selection_shell
+falsepositives:
+  - Web hosting control panels, deployment hooks or diagnostics that intentionally spawn shells from web runtimes.
+level: high
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: low
+  test_status: none

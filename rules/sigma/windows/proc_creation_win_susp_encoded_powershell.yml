@@ -1,0 +1,46 @@
+title: Suspicious Encoded PowerShell Command Line
+id: 7f3a1c2e-4b5d-4e6f-8a90-1b2c3d4e5f60
+status: stable
+description: >
+  Detects PowerShell executed with an encoded command (-EncodedCommand / -enc
+  and common short forms), a common technique used to obfuscate malicious
+  payloads delivered through scripts, macros, or living-off-the-land execution.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+  - https://attack.mitre.org/techniques/T1027/
+author: rustinel-rules
+date: 2026-06-03
+tags:
+  - attack.execution
+  - attack.t1059.001
+  - attack.defense-evasion
+  - attack.t1027
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_flag:
+    CommandLine|contains|windash:
+      - ' /e '
+      - ' /en '
+      - ' /enc '
+      - ' /enco '
+      - ' /encodedcommand '
+      - ' -e '
+      - ' -en '
+      - ' -enc '
+      - ' -enco '
+      - ' -encodedcommand '
+  condition: selection_img and selection_flag
+falsepositives:
+  - Legitimate administration tooling and installers occasionally use encoded commands.
+level: high
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: low
+  test_status: atomic

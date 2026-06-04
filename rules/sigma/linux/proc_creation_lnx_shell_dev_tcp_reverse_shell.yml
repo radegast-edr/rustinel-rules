@@ -1,0 +1,44 @@
+title: Linux Reverse Shell via /dev/tcp
+id: a3c5c821-004a-4e52-8684-0f7f9ea0404c
+status: experimental
+description: >
+  Detects shell command lines that use Bash's /dev/tcp pseudo-device for an
+  interactive reverse shell. This is a high-confidence post-exploitation
+  technique and is suitable for the Essential Linux tier when command-line
+  telemetry is available.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.execution
+  - attack.command-and-control
+  - attack.t1059.004
+  - attack.t1105
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_shell:
+    Image|endswith:
+      - '/bash'
+      - '/sh'
+      - '/zsh'
+      - '/dash'
+  selection_dev_tcp:
+    CommandLine|contains: '/dev/tcp/'
+  selection_redirect:
+    CommandLine|contains:
+      - '>&'
+      - '0>&1'
+      - '1>&'
+      - '2>&'
+  condition: selection_shell and selection_dev_tcp and selection_redirect
+falsepositives:
+  - None expected; legitimate shell use of /dev/tcp with interactive stream redirection is rare.
+level: high
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: low
+  test_status: none

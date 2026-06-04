@@ -1,0 +1,43 @@
+title: Shell Profile / RC File Persistence
+id: 5f607182-93a4-45b6-9fc7-4a5b6c7d8e95
+status: experimental
+description: >
+  Detects creation or replacement of shell initialization files (user rc files,
+  /etc/profile.d drop-ins) used to execute attacker code at shell startup.
+  Moderately noisy due to legitimate dotfile management, so intended for the
+  Advanced tier.
+references:
+  - https://attack.mitre.org/techniques/T1546/004/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1546.004
+logsource:
+  category: file_event
+  product: linux
+detection:
+  selection_user_rc:
+    TargetFilename|endswith:
+      - '/.bashrc'
+      - '/.bash_profile'
+      - '/.bash_login'
+      - '/.profile'
+      - '/.zshrc'
+      - '/.zprofile'
+  selection_system:
+    TargetFilename|contains: '/etc/profile.d/'
+  selection_system_files:
+    TargetFilename|endswith:
+      - '/etc/bash.bashrc'
+      - '/etc/profile'
+  condition: selection_user_rc or selection_system or selection_system_files
+falsepositives:
+  - Dotfile management, provisioning, and developer environment setup.
+level: medium
+rustinel:
+  telemetry:
+    - file_event
+  expected_false_positive_level: medium
+  test_status: none

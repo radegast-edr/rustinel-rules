@@ -1,0 +1,52 @@
+title: Keychain Credential Dump via security
+id: 7a1c2e3f-4b5d-4e6f-8a90-1b2c3d4e5f01
+status: experimental
+description: >
+  Detects use of the macOS `security` command-line tool to dump the keychain or
+  print stored browser/keychain passwords. Infostealers use this to harvest
+  saved credentials, including browser "Safe Storage" keys, from the login
+  keychain.
+references:
+  - https://attack.mitre.org/techniques/T1555/001/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.credential-access
+  - attack.t1555.001
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_security:
+    Image|endswith: '/security'
+  selection_dump:
+    CommandLine|contains: 'dump-keychain'
+  selection_find:
+    CommandLine|contains:
+      - 'find-generic-password'
+      - 'find-internet-password'
+  selection_print_secret:
+    CommandLine|contains:
+      - ' -w'
+      - ' -g'
+  selection_sensitive_service:
+    CommandLine|contains:
+      - 'Safe Storage'
+      - 'Chrome'
+      - 'Chromium'
+      - 'Brave'
+      - 'Arc'
+      - 'Microsoft Edge'
+      - 'Firefox'
+      - 'Safari'
+      - 'login.keychain'
+      - 'keychain-db'
+  condition: selection_security and (selection_dump or (selection_find and selection_print_secret and selection_sensitive_service))
+falsepositives:
+  - Credential-management apps or scripts that legitimately dump keychains or print browser-related keychain secrets.
+level: high
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: low
+  test_status: none

@@ -1,0 +1,34 @@
+title: Certutil Used to Download Remote Content (Hunting)
+id: 3e2d1c0b-5a4f-4938-8271-6a5b4c3d2e10
+status: experimental
+description: >
+  Broad hunting lead for certutil.exe used with URL-cache / download flags to
+  retrieve remote content — a living-off-the-land technique. Expected to be
+  noisy in environments where certutil is used for legitimate certificate work.
+references:
+  - https://attack.mitre.org/techniques/T1105/
+  - https://lolbas-project.github.io/lolbas/Binaries/Certutil/
+author: rustinel-rules
+date: 2026-06-03
+tags:
+  - attack.command-and-control
+  - attack.t1105
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\certutil.exe'
+    CommandLine|contains:
+      - 'urlcache'
+      - 'verifyctl'
+      - '-split'
+  condition: selection
+falsepositives:
+  - Legitimate certificate management and software deployment workflows.
+level: low
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: high
+  test_status: none

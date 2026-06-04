@@ -1,0 +1,47 @@
+title: UAC Bypass via Auto-Elevating LOLBin
+id: f2b8c4d1-6e90-4a27-9d3b-5a1c2e7f8b21
+status: experimental
+description: >
+  Detects a known auto-elevating Windows binary (fodhelper, computerdefaults,
+  sdclt, eventvwr, slui, wsreset) spawning a command interpreter or scripting
+  host. These binaries are abused for UAC bypass by hijacking the registry keys
+  they reference, resulting in an elevated child shell.
+references:
+  - https://attack.mitre.org/techniques/T1548/002/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.privilege-escalation
+  - attack.defense-evasion
+  - attack.t1548.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_parent:
+    ParentImage|endswith:
+      - '\fodhelper.exe'
+      - '\computerdefaults.exe'
+      - '\sdclt.exe'
+      - '\eventvwr.exe'
+      - '\slui.exe'
+      - '\wsreset.exe'
+  selection_child:
+    Image|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\mshta.exe'
+      - '\rundll32.exe'
+      - '\regsvr32.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+  condition: selection_parent and selection_child
+falsepositives:
+  - Very rare; these binaries seldom spawn interpreters legitimately.
+level: high
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: low
+  test_status: none

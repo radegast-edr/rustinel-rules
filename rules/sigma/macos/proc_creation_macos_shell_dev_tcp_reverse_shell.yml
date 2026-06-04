@@ -1,0 +1,43 @@
+title: macOS Reverse Shell via /dev/tcp
+id: be06a6b0-fa9f-4df4-9d4a-9f8794037508
+status: experimental
+description: >
+  Detects shell command lines that use Bash's /dev/tcp pseudo-device for an
+  interactive reverse shell. This is a high-confidence post-exploitation
+  technique and is suitable for the macOS Essential tier because EndpointSecurity
+  provides native argv telemetry.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.execution
+  - attack.command-and-control
+  - attack.t1059.004
+  - attack.t1105
+logsource:
+  category: process_creation
+  product: macos
+detection:
+  selection_shell:
+    Image|endswith:
+      - '/bash'
+      - '/zsh'
+      - '/sh'
+  selection_dev_tcp:
+    CommandLine|contains: '/dev/tcp/'
+  selection_redirect:
+    CommandLine|contains:
+      - '>&'
+      - '0>&1'
+      - '1>&'
+      - '2>&'
+  condition: selection_shell and selection_dev_tcp and selection_redirect
+falsepositives:
+  - None expected; legitimate shell use of /dev/tcp with interactive stream redirection is rare.
+level: high
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: low
+  test_status: none

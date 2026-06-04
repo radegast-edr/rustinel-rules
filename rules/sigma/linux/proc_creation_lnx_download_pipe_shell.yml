@@ -1,0 +1,54 @@
+title: Linux Download and Execute Piped to Shell
+id: 94fb53c7-debd-4287-99e4-6eb0ba923731
+status: experimental
+description: >
+  Detects shell command lines that fetch remote content with curl or wget and
+  pipe it directly into an interpreter. This is common in malware staging and
+  opportunistic Linux server compromise, but also appears in legitimate
+  installer one-liners, so it belongs in Advanced.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+  - https://attack.mitre.org/techniques/T1105/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.execution
+  - attack.command-and-control
+  - attack.t1059.004
+  - attack.t1105
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_shell:
+    Image|endswith:
+      - '/bash'
+      - '/sh'
+      - '/zsh'
+      - '/dash'
+  selection_download:
+    CommandLine|contains:
+      - 'curl '
+      - 'wget '
+      - 'fetch '
+  selection_pipe:
+    CommandLine|contains:
+      - '| sh'
+      - '|sh'
+      - '| bash'
+      - '|bash'
+      - '| zsh'
+      - '|zsh'
+      - '| python'
+      - '|python'
+      - '| perl'
+      - '|perl'
+  condition: selection_shell and selection_download and selection_pipe
+falsepositives:
+  - Legitimate software bootstrap scripts and administrative install one-liners.
+level: medium
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: medium
+  test_status: none

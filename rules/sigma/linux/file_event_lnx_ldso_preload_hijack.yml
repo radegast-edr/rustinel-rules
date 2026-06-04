@@ -1,0 +1,32 @@
+title: Dynamic Linker Hijacking via ld.so.preload
+id: 0a1b2c3d-4e5f-4061-8a72-9b0c1d2e3f40
+status: experimental
+description: >
+  Detects creation of /etc/ld.so.preload, which forces a shared object to be
+  loaded into every dynamically linked process. This file does not exist by
+  default and its creation is a strong, low-noise indicator of a userland
+  rootkit or persistence mechanism.
+references:
+  - https://attack.mitre.org/techniques/T1574/006/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.defense-evasion
+  - attack.t1574.006
+logsource:
+  category: file_event
+  product: linux
+detection:
+  selection:
+    TargetFilename|endswith: '/etc/ld.so.preload'
+  condition: selection
+falsepositives:
+  - Rare legitimate use of global library preloading by some security or APM agents.
+level: high
+rustinel:
+  telemetry:
+    - file_event
+  expected_false_positive_level: low
+  test_status: none

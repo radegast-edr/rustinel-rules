@@ -1,0 +1,33 @@
+title: Rundll32 Execution Without Standard Arguments
+id: 9c8b7a6e-1d2f-4a3b-9c0d-2e3f4a5b6c71
+status: test
+description: >
+  Detects rundll32.exe executed without a DLL/entrypoint argument, a pattern
+  associated with proxied execution and process hollowing by some malware
+  families. Broader and noisier than the Essential encoded-PowerShell rule.
+references:
+  - https://attack.mitre.org/techniques/T1218/011/
+author: rustinel-rules
+date: 2026-06-03
+tags:
+  - attack.defense-evasion
+  - attack.t1218.011
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\rundll32.exe'
+  filter_args:
+    CommandLine|contains:
+      - '.dll'
+      - '.cpl'
+  condition: selection and not filter_args
+falsepositives:
+  - Some legitimate software launches rundll32.exe with non-DLL arguments.
+level: medium
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: medium
+  test_status: manual

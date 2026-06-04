@@ -1,0 +1,36 @@
+title: Scheduled Task Creation via Schtasks
+id: 4a596825-4674-4db3-b360-842435edf11a
+status: experimental
+description: >
+  Detects scheduled task creation through schtasks.exe. Adversaries use
+  scheduled tasks for persistence, execution and privilege escalation. This
+  broader process-creation variant is intended for Advanced because legitimate
+  administration and software deployment also create tasks.
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+author: rustinel-rules
+date: 2026-06-04
+tags:
+  - attack.execution
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1053.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_img:
+    Image|endswith: '\schtasks.exe'
+  selection_create:
+    CommandLine|contains|windash:
+      - ' /create'
+      - ' -create'
+  condition: selection_img and selection_create
+falsepositives:
+  - Software installation, endpoint management and legitimate administrative automation.
+level: medium
+rustinel:
+  telemetry:
+    - process_creation
+  expected_false_positive_level: medium
+  test_status: none

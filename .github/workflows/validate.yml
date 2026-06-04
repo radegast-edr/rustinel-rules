@@ -1,0 +1,61 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Detection as Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync tooling (uv)
+        run: uv sync --frozen
+
+      - name: Lint (ruff)
+        run: uv run ruff check tools
+
+      - name: Format check (ruff)
+        run: uv run ruff format --check tools
+
+      - name: Type check (ty)
+        run: uv run ty check
+
+      - name: Validate rules and pack manifests
+        working-directory: tools
+        run: uv run python validate.py
+
+  build:
+    name: Build pack artifacts
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync tooling (uv)
+        run: uv sync --frozen
+
+      - name: Build packs (zips + index.json)
+        working-directory: tools
+        run: uv run python build_packs.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rustinel-rules-dist
+          path: dist/
+          if-no-files-found: error
