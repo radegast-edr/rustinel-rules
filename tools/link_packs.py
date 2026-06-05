@@ -110,13 +110,13 @@ def main():
                             find_by_content(DIR_RULES, rule_id, glob="*.yaml"),
                         )
                     )
-                    path_rule_link = file_pack.parent / "rules" / category / path_rule.name
+                    path_rule_link = file_pack.parent / category / path_rule.name
                     symlink(path_rule, path_rule_link)
                     print(f"    [*] Linked {rule_id} to {path_rule_link}")
             elif category == "yara":
                 for rule_id in rule_ids:
                     path_rule = next(chain(find_by_content(DIR_RULES, rule_id, glob="*.yar")))
-                    path_rule_link = file_pack.parent / "rules" / category / path_rule.name
+                    path_rule_link = file_pack.parent / category / path_rule.name
                     symlink(path_rule, path_rule_link)
                     print(f"    [*] Linked {rule_id} to {path_rule_link}")
             elif category == "ioc":
@@ -148,7 +148,7 @@ def main():
                             ioc_comment_str = " ".join(ioc_comment_parts)
                             iocs[indicator_type].append(f"{ioc_value};{ioc_comment_str}")
                 for ioc_type, ioc_values in iocs.items():
-                    path_rule = file_pack.parent / "rules" / category / f"{ioc_type}.txt"
+                    path_rule = file_pack.parent / category / f"{ioc_type}.txt"
                     path_rule.parent.mkdir(parents=True, exist_ok=True)
                     path_rule.write_text("\n".join(ioc_values))
                     print(f"    [*] Written {len(ioc_values)} {ioc_type} IOCs to {path_rule}")
