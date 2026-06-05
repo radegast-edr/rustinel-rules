@@ -1,0 +1,1 @@
+../../../../../rules/yara/windows/win_susp_mimikatz_strings.yar

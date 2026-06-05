@@ -11,12 +11,12 @@
     "description",
     "os",
     "level",
+    "schema",
     "pack_schema_version",
     "requires_rustinel",
     "default",
     "status",
-    "extends",
-    "rules"
+    "extends"
   ],
   "properties": {
     "name": {
@@ -40,6 +40,11 @@
     "level": {
       "type": "string",
       "enum": ["essential", "advanced", "hunting"]
+    },
+    "schema": {
+      "type": "string",
+      "description": "Pack manifest schema version.",
+      "const": "v1.0.0"
     },
     "pack_schema_version": {
       "type": "integer",
@@ -69,15 +74,102 @@
       "uniqueItems": true
     },
     "rules": {
-      "type": "array",
-      "description": "Rule ids (Sigma UUIDs or YARA rule names) added by THIS pack on top of any it extends.",
-      "items": { "type": "string" },
-      "uniqueItems": true
+      "type": "object",
+      "description": "Rules included, inherited, or excluded by this pack.",
+      "additionalProperties": false,
+      "properties": {
+        "has": {
+          "type": "object",
+          "description": "Rules directly included by this pack.",
+          "additionalProperties": false,
+          "properties": {
+            "sigma": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            },
+            "yara": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            },
+            "ioc": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            }
+          }
+        },
+        "includes": {
+          "type": "object",
+          "description": "Rules that should be included inside this pack from the packs that it is extending.",
+          "additionalProperties": false,
+          "properties": {
+            "sigma": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            },
+            "yara": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            },
+            "ioc": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            }
+          }
+        },
+        "excludes": {
+          "type": "object",
+          "description": "Rules that should not be taken from an extended pack, or ignored if loading from automatic sources.",
+          "additionalProperties": false,
+          "properties": {
+            "sigma": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            },
+            "yara": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            },
+            "ioc": {
+              "type": "array",
+              "items": { "type": "string" },
+              "uniqueItems": true
+            }
+          }
+        }
+      }
     },
     "sources": {
-      "type": "array",
+      "type": "object",
       "description": "Upstream / CTI references that informed this pack.",
-      "items": { "type": "string" }
+      "additionalProperties": false,
+      "properties": {
+        "manual": {
+          "type": "array",
+          "description": "Rules/sources that were extracted manually.",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "sigma": {
+          "type": "array",
+          "description": "Sigma sources that can be cloned with git and copied automatically.",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "yara": {
+          "type": "array",
+          "description": "YARA sources that can be cloned with git and copied automatically.",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        }
+      }
     },
     "license": {
       "type": "string",

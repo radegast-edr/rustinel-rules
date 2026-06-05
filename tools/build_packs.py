@@ -134,6 +134,7 @@ def materialize_pack(pack: dict, by_id, artifact_index, version: str) -> dict:
         "version": version,
         "default": manifest.get("default", False),
         "requires_rustinel": manifest.get("requires_rustinel"),
+        "schema": manifest.get("schema"),
         "pack_schema_version": manifest.get("pack_schema_version"),
         "status": manifest.get("status"),
         "expected_false_positive_level": manifest.get("expected_false_positive_level"),
