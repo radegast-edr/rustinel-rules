@@ -4,12 +4,12 @@
 For each pack manifest this produces, under dist/:
   - dist/<pack-id>/                 flat materialized pack folder == what the
        pack.yml                     Rustinel engine loads directly:
-       rules/sigma/<file>.yml         -> scanner.sigma_rules_path
-       rules/yara/<file>.yar          -> scanner.yara_rules_path
-       rules/ioc/hashes.txt           -> [ioc].hashes_path
-       rules/ioc/ips.txt              -> [ioc].ips_path
-       rules/ioc/domains.txt          -> [ioc].domains_path
-       rules/ioc/paths_regex.txt      -> [ioc].paths_regex_path
+       sigma/<file>.yml         -> scanner.sigma_rules_path
+       yara/<file>.yar          -> scanner.yara_rules_path
+       ioc/hashes.txt           -> [ioc].hashes_path
+       ioc/ips.txt              -> [ioc].ips_path
+       ioc/domains.txt          -> [ioc].domains_path
+       ioc/paths_regex.txt      -> [ioc].paths_regex_path
   - dist/<pack-id>-<version>.zip    zipped pack (one folder = one pack = one zip)
   - dist/index.json                 catalog of all packs + checksums + engine paths
 
@@ -77,8 +77,8 @@ def materialize_pack(pack: dict, by_id, artifact_index, version: str) -> dict:
     out_dir = lib.DIST_DIR / pack_id
     if out_dir.exists():
         shutil.rmtree(out_dir)
-    (out_dir / "rules" / "sigma").mkdir(parents=True, exist_ok=True)
-    (out_dir / "rules" / "yara").mkdir(parents=True, exist_ok=True)
+    (out_dir / "sigma").mkdir(parents=True, exist_ok=True)
+    (out_dir / "yara").mkdir(parents=True, exist_ok=True)
 
     resolved_ids = lib.resolve_pack_rules(pack, by_id)
     copied = []
@@ -92,7 +92,7 @@ def materialize_pack(pack: dict, by_id, artifact_index, version: str) -> dict:
             )
 
         if art.kind in ("sigma", "yara"):
-            dest = out_dir / "rules" / art.kind / art.path.name
+            dest = out_dir / art.kind / art.path.name
             shutil.copy2(art.path, dest)
             copied.append({"id": artifact_id, "kind": art.kind, "file": art.path.name})
         elif art.kind == "ioc":
@@ -105,7 +105,7 @@ def materialize_pack(pack: dict, by_id, artifact_index, version: str) -> dict:
                     count += 1
             copied.append({"id": artifact_id, "kind": "ioc", "indicators": count})
 
-    ioc_counts = write_ioc_files(out_dir / "rules" / "ioc", ioc_acc)
+    ioc_counts = write_ioc_files(out_dir / "ioc", ioc_acc)
 
     # Write a clean manifest (drop internal __path__) plus build metadata.
     manifest = {k: v for k, v in pack.items() if not k.startswith("__")}
