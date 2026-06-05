@@ -86,10 +86,6 @@ def main():
             pack["sources"] = {"manual": list(sources)}
             modified = True
 
-        if "schema" not in pack:
-            pack["schema"] = "v1.0.0"
-            modified = True
-
         if modified:
             out = StringIO()
             ryaml.dump(pack, out)

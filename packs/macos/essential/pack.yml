@@ -7,7 +7,6 @@ description: >
     production-ready, so this pack is disabled by default.
 os: macos
 level: essential
-schema: v1.0.0
 pack_schema_version: 1
 requires_rustinel: ">=1.0.2"
 default: false

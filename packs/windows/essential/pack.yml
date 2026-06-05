@@ -3,7 +3,6 @@ id: windows-essential
 description: Low-noise, high-confidence Windows detections for Rustinel. Safe default pack.
 os: windows
 level: essential
-schema: v1.0.0
 pack_schema_version: 1
 requires_rustinel: ">=1.0.2"
 default: true

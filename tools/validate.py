@@ -231,7 +231,6 @@ REQUIRED_PACK_FIELDS = [
     "description",
     "os",
     "level",
-    "schema",
     "pack_schema_version",
     "requires_rustinel",
     "default",
@@ -255,8 +254,6 @@ def check_packs(packs, artifacts, rep: Report):
         for field in REQUIRED_PACK_FIELDS:
             if field not in pack:
                 rep.error(where, f"missing required field '{field}'")
-        if pack.get("schema") != "v1.0.0":
-            rep.error(where, "schema must be 'v1.0.0' for v1")
         if pack.get("pack_schema_version") != 1:
             rep.error(where, "pack_schema_version must be 1 for v1")
         if not pack.get("license"):

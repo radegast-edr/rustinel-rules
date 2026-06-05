@@ -6,7 +6,6 @@ description: >
     without tuning.
 os: windows
 level: hunting
-schema: v1.0.0
 pack_schema_version: 1
 requires_rustinel: ">=1.0.2"
 default: false

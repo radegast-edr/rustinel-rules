@@ -11,7 +11,6 @@
     "description",
     "os",
     "level",
-    "schema",
     "pack_schema_version",
     "requires_rustinel",
     "default",
@@ -40,11 +39,6 @@
     "level": {
       "type": "string",
       "enum": ["essential", "advanced", "hunting"]
-    },
-    "schema": {
-      "type": "string",
-      "description": "Pack manifest schema version.",
-      "const": "v1.0.0"
     },
     "pack_schema_version": {
       "type": "integer",

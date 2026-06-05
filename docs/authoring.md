@@ -92,7 +92,6 @@ rustinel:
 Then add the `id` to a pack, e.g. `packs/windows/essential/pack.yml`:
 
 ```yaml
-schema: v1.0.0
 rules:
   has:
     sigma:
