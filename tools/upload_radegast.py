@@ -61,7 +61,7 @@ def main() -> None:
                 json={
                     "pack_id": pack_id,
                     "name": pack_name,
-                    "description": f"Rustinel pack from https://github.com/Karib0u/rustinel-rules/",
+                    "description": f"Rustinel pack from https://github.com/Karib0u/rustinel-rules/.",
                 }
             )
             r.raise_for_status()
