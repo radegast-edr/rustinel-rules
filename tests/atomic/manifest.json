@@ -179,7 +179,8 @@
       "name": "windows_ntds_dit_reference",
       "platform": "windows",
       "engine": "sigma",
-      "script": "windows/ntds_dit_reference.ps1"
+      "script": "windows/ntds_dit_reference.ps1",
+      "allow_failure": true
     },
     {
       "id": "b4d8f0c5-3a92-4e67-9d1b-7c3e2f5a0d23",

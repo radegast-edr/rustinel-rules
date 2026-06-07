@@ -48,6 +48,9 @@ uv run python tools/validate.py
 
 # 2. Build engine-ready packs into dist/ (folders + zips + index.json)
 uv run python tools/build_packs.py
+
+# 3. Build the website catalog into dist/catalog.json
+uv run python tools/build_catalog.py
 ```
 
 Then point Rustinel at a built pack — a materialized pack folder **is** the directory Rustinel
@@ -69,6 +72,22 @@ paths_regex_path = "windows-essential/rules/ioc/paths_regex.txt"
 The exact paths for every pack are emitted under each pack's `engine` key in `dist/index.json`.
 The default Essential packs ship the **EICAR** test IOC set — drop an EICAR test file on disk to
 confirm detection is wired end to end. Full instructions: **[docs/usage.md](docs/usage.md)**.
+
+## Website catalog
+
+The rules repo also owns the website data contract. `tools/build_catalog.py` emits
+`dist/catalog.json`, a self-contained catalog of rules, ATT&CK techniques and packs. The website
+repo syncs that generated file into its committed `src/data/rustinel-rules.json` snapshot:
+
+```bash
+# from this repo
+uv run python tools/build_catalog.py
+
+# from ../rustinel-front-final
+npm run sync:rules
+```
+
+The website build reads the committed snapshot, so it does not need a sibling rules checkout in CI.
 
 ---
 
@@ -111,7 +130,7 @@ rustinel-rules/
 │   ├── linux/{essential,advanced}/pack.yml
 │   └── macos/{essential,advanced}/pack.yml          # experimental (post-v1)
 ├── schemas/                # JSON Schema for pack.yml and IOC sets (v1)
-├── tools/                  # Build + validation tooling (lib.py, validate.py, build_packs.py)
+├── tools/                  # Build + validation tooling (validate, packs, website catalog)
 ├── docs/                   # Documentation (you are here)
 ├── dist/                   # Build output (gitignored): packs + zips + index.json
 └── .github/workflows/      # CI: validate + build
