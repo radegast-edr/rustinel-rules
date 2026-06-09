@@ -19,10 +19,10 @@ dist/
 ├── windows-essential/            # <- drop-in folder
 │   ├── pack.yml
 │   └── rules/{sigma,yara,ioc}/
-└── windows-essential-0.1.0.zip   # <- distributable artifact
+└── windows-essential-0.2.0.zip   # <- distributable artifact
 ```
 
-Pass `--version X.Y.Z` to `build_packs.py` to stamp a release version (default `0.1.0`).
+Pass `--version X.Y.Z` to `build_packs.py` to stamp a release version (default `0.2.0`).
 
 ## 2. Point `config.toml` at the pack
 

@@ -124,12 +124,12 @@ automatically:
 ```json
 {
   "id": "windows-essential",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "default": true,
   "rule_count": 14,
   "ioc_count": 3,
   "sha256": "…",
-  "artifact": "windows-essential-0.1.0.zip",
+  "artifact": "windows-essential-0.2.0.zip",
   "engine": {
     "sigma_rules_path": "windows-essential/rules/sigma",
     "yara_rules_path": "windows-essential/rules/yara",
