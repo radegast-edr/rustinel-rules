@@ -3,9 +3,9 @@ Uploads built packages to Radegast EDR via API
 """
 
 from json import loads
-from typing import TypedDict
 from os import environ
 from pathlib import Path
+from typing import TypedDict
 
 from requests import get, post
 
@@ -31,7 +31,10 @@ def fetch_radegast_packs() -> list[RadegastPack]:
         newest_version=None
     ) for x in r.json()]
     for pack in packs:
-        r = get(f"{RADEGAST_URL}/api/v1/packs/{pack['id']}/versions", headers={"X-API-Key": RADEGAST_API_KEY})
+        r = get(
+            f"{RADEGAST_URL}/api/v1/packs/{pack['id']}/versions",
+            headers={"X-API-Key": RADEGAST_API_KEY}
+        )
         r.raise_for_status()
         versions = r.json()
         for version in versions:
@@ -61,7 +64,7 @@ def main() -> None:
                 json={
                     "pack_id": pack_id,
                     "name": pack_name,
-                    "description": f"Rustinel pack from https://github.com/Karib0u/rustinel-rules/.",
+                    "description": "Rustinel pack from https://github.com/Karib0u/rustinel-rules/.",
                 }
             )
             r.raise_for_status()
