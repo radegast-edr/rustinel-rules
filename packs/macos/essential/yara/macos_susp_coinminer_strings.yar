@@ -1,1 +1,0 @@
-../../../../rules/yara/macos/macos_susp_coinminer_strings.yar

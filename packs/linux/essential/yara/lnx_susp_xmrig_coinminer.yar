@@ -1,1 +1,0 @@
-../../../../rules/yara/linux/lnx_susp_xmrig_coinminer.yar
