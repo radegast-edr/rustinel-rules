@@ -3,7 +3,7 @@ id: linux-essential
 description: Low-noise, high-confidence Linux detections for Rustinel. Safe default pack.
 os: linux
 level: essential
-pack_schema_version: 1
+pack_schema_version: 2
 requires_rustinel: ">=1.0.2"
 default: true
 expected_false_positive_level: low

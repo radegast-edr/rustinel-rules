@@ -53,7 +53,7 @@ Key manifest fields:
 | `id` / `name` | Stable id (`^[a-z0-9]+(-[a-z0-9]+)*$`) and human name. |
 | `os` | `windows` \| `linux` \| `macos`. |
 | `level` | `essential` \| `advanced` \| `hunting`. |
-| `pack_schema_version` | Required pack manifest schema version (must be `1`). |
+| `pack_schema_version` | Required pack manifest schema version (must be `2`). |
 | `default` | Whether this pack is enabled by default. |
 | `extends` | Pack ids cumulatively included (rules merged, never duplicated). |
 | `rules` | Optional dictionary specifying rules directly in this pack (`has`), or rules to include (`includes`) / exclude (`excludes`) from extended packs or automatic sources. |

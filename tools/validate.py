@@ -254,8 +254,8 @@ def check_packs(packs, artifacts, rep: Report):
         for field in REQUIRED_PACK_FIELDS:
             if field not in pack:
                 rep.error(where, f"missing required field '{field}'")
-        if pack.get("pack_schema_version") != 1:
-            rep.error(where, "pack_schema_version must be 1 for v1")
+        if pack.get("pack_schema_version") != 2:
+            rep.error(where, "pack_schema_version must be 2 for v2")
         if not pack.get("license"):
             rep.warn(where, "no 'license' field on pack")
 

@@ -94,7 +94,7 @@ Full catalog and per-pack rule inventory: **[docs/packs.md](docs/packs.md)**.
 `rustinel-rules` is versioned **independently** from the engine — detection content evolves faster. Each pack manifest declares the engine version it needs:
 
 ```yaml
-pack_schema_version: 1
+pack_schema_version: 2
 requires_rustinel: ">=1.0.2"
 ```
 

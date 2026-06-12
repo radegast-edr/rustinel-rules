@@ -5,7 +5,7 @@ description: >
     occur than in Essential; tune per environment before relying on by default.
 os: windows
 level: advanced
-pack_schema_version: 1
+pack_schema_version: 2
 requires_rustinel: ">=1.0.2"
 default: false
 expected_false_positive_level: medium
