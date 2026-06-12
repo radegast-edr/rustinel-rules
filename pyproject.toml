@@ -16,9 +16,6 @@ dev = [
     "ruff>=0.15.16",
     "ty>=0.0.45",
 ]
-radegast = [
-    "requests>=2.34.2",
-]
 
 # This repo ships detection content plus helper scripts under tools/; it is not a
 # distributable Python package, so uv treats it as a non-package project (no build

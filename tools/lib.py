@@ -9,9 +9,9 @@ Each detection artifact (Sigma rule, YARA rule, IOC set) lives **once** under
 content. A pack materializes (see ``build_packs.py``) into exactly the layout the
 Rustinel engine loads:
 
-    rules/sigma/   recursive dir of Sigma .yml      -> scanner.sigma_rules_path
-    rules/yara/    recursive dir of YARA .yar       -> scanner.yara_rules_path
-    rules/ioc/hashes.txt  ips.txt  domains.txt  paths_regex.txt
+    sigma/         recursive dir of Sigma .yml      -> scanner.sigma_rules_path
+    yara/          recursive dir of YARA .yar       -> scanner.yara_rules_path
+    ioc/hashes.txt  ips.txt  domains.txt  paths_regex.txt
                                                     -> [ioc].*_path
 
 Requires PyYAML (see tools/requirements.txt).
@@ -201,15 +201,12 @@ def _get_rule_ids_from_dict(sub_dict: dict | list | None) -> list[str]:
 
 
 def get_pack_subfolder_rules(pack: dict) -> dict[str, list[str]]:
-    """Scan the pack's 'rules' subfolder and return a dict of {category: [rule_ids]}."""
+    """Scan the pack's directories and return a dict of {category: [rule_ids]}."""
     result = {"sigma": [], "yara": [], "ioc": []}
     pack_path_str = pack.get("__path__")
     if not pack_path_str:
         return result
     pack_dir = Path(pack_path_str).parent
-    rules_dir = pack_dir / "rules"
-    if not rules_dir.is_dir():
-        return result
 
     # Build a map of filename to artifact ID from canonical rules
     filename_to_id = {}
@@ -218,7 +215,7 @@ def get_pack_subfolder_rules(pack: dict) -> dict[str, list[str]]:
             filename_to_id[(art.kind, art.path.name)] = art.id
 
     # 1. Sigma
-    sigma_dir = rules_dir / "sigma"
+    sigma_dir = pack_dir / "sigma"
     if sigma_dir.is_dir():
         for file in sorted(sigma_dir.glob("*")):
             if file.is_file() and file.suffix in (".yml", ".yaml"):
@@ -234,7 +231,7 @@ def get_pack_subfolder_rules(pack: dict) -> dict[str, list[str]]:
                         pass
 
     # 2. Yara
-    yara_dir = rules_dir / "yara"
+    yara_dir = pack_dir / "yara"
     if yara_dir.is_dir():
         for file in sorted(yara_dir.glob("*")):
             if file.is_file() and file.suffix in (".yar", ".yara"):
@@ -254,7 +251,7 @@ def get_pack_subfolder_rules(pack: dict) -> dict[str, list[str]]:
                         pass
 
     # 3. IOC
-    ioc_dir = rules_dir / "ioc"
+    ioc_dir = pack_dir / "ioc"
     if ioc_dir.is_dir():
         ioc_rule_ids = set()
         for file in ioc_dir.glob("*.txt"):

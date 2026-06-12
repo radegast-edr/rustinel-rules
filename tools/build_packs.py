@@ -95,8 +95,6 @@ def materialize_pack(pack: dict, by_id, artifact_index, version: str) -> dict:
         dest = out_dir / art.kind / art.path.name
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(art.path, dest)
-        copied.append({"id": artifact_id, "kind": art.kind, "file": art.path.name})
-
         if art.kind == "ioc":
             count = 0
             for ioc_type, entries in art.indicators.items():
@@ -105,7 +103,11 @@ def materialize_pack(pack: dict, by_id, artifact_index, version: str) -> dict:
                     full = f"[{art.id}] {comment}" if comment else f"[{art.id}]"
                     ioc_acc[ioc_type].append((value, full))
                     count += 1
-            copied.append({"id": artifact_id, "kind": "ioc", "indicators": count})
+            copied.append(
+                {"id": artifact_id, "kind": "ioc", "file": art.path.name, "indicators": count}
+            )
+        else:
+            copied.append({"id": artifact_id, "kind": art.kind, "file": art.path.name})
 
     ioc_counts = write_ioc_files(out_dir / "ioc", ioc_acc)
 
